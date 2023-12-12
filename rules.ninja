@@ -4,21 +4,11 @@
 
 
 
-# This file contains all the build statements describing the
+# This file contains all the rules used to get the outputs files
 
-# compilation DAG.
+# built from the input files.
 
-
-
-# =============================================================================
-
-# Write statements declared in CMakeLists.txt:
-
-# 
-
-# Which is the root file.
-
-# =============================================================================
+# It is included in the main 'build.ninja'.
 
 
 
@@ -30,85 +20,25 @@
 
 # =============================================================================
 
-
-
-#############################################
-
-# Minimal version of Ninja required by this file
-
-
-
-ninja_required_version = 1.5
-
-
-
-# =============================================================================
-
-# Include auxiliary files.
-
-
-
-
-
-#############################################
-
-# Include rules file.
-
-
-
-include CMakeFiles/rules.ninja
-
-
-
 # =============================================================================
 
 
 
 #############################################
 
-# Logical path to working directory; prefix for absolute paths.
+# Rule for compiling C files.
 
 
 
-cmake_ninja_workdir = /home/a1/repos/test4/build-cmake/
+rule C_COMPILER__MyStaticLib_unscanned_
 
-# =============================================================================
+  depfile = $DEP_FILE
 
-# Object build statements for STATIC_LIBRARY target MyStaticLib
+  deps = gcc
 
+  command = ${LAUNCHER}${CODE_CHECK}/usr/bin/cc $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
 
-
-
-
-#############################################
-
-# Order-only phony target for MyStaticLib
-
-
-
-build cmake_object_order_depends_target_MyStaticLib: phony || CMakeFiles/MyStaticLib.dir
-
-
-
-build CMakeFiles/MyStaticLib.dir/hello2.c.o: C_COMPILER__MyStaticLib_unscanned_ /home/a1/repos/test4/hello2.c || cmake_object_order_depends_target_MyStaticLib
-
-  DEP_FILE = CMakeFiles/MyStaticLib.dir/hello2.c.o.d
-
-  OBJECT_DIR = CMakeFiles/MyStaticLib.dir
-
-  OBJECT_FILE_DIR = CMakeFiles/MyStaticLib.dir
-
-  TARGET_COMPILE_PDB = CMakeFiles/MyStaticLib.dir/MyStaticLib.pdb
-
-  TARGET_PDB = libMyStaticLib.pdb
-
-
-
-
-
-# =============================================================================
-
-# Link build statements for STATIC_LIBRARY target MyStaticLib
+  description = Building C object $out
 
 
 
@@ -116,29 +46,17 @@ build CMakeFiles/MyStaticLib.dir/hello2.c.o: C_COMPILER__MyStaticLib_unscanned_ 
 
 #############################################
 
-# Link the static library libMyStaticLib.a
+# Rule for linking C static library.
 
 
 
-build libMyStaticLib.a: C_STATIC_LIBRARY_LINKER__MyStaticLib_ CMakeFiles/MyStaticLib.dir/hello2.c.o
+rule C_STATIC_LIBRARY_LINKER__MyStaticLib_
 
-  OBJECT_DIR = CMakeFiles/MyStaticLib.dir
+  command = $PRE_LINK && /snap/cmake/1359/bin/cmake -E rm -f $TARGET_FILE && /usr/bin/ar qc $TARGET_FILE $LINK_FLAGS $in && /usr/bin/ranlib $TARGET_FILE && $POST_BUILD
 
-  POST_BUILD = :
+  description = Linking C static library $TARGET_FILE
 
-  PRE_LINK = :
-
-  TARGET_COMPILE_PDB = CMakeFiles/MyStaticLib.dir/MyStaticLib.pdb
-
-  TARGET_FILE = libMyStaticLib.a
-
-  TARGET_PDB = libMyStaticLib.pdb
-
-
-
-# =============================================================================
-
-# Object build statements for EXECUTABLE target StaticTest
+  restat = $RESTAT
 
 
 
@@ -146,33 +64,19 @@ build libMyStaticLib.a: C_STATIC_LIBRARY_LINKER__MyStaticLib_ CMakeFiles/MyStati
 
 #############################################
 
-# Order-only phony target for StaticTest
+# Rule for compiling C files.
 
 
 
-build cmake_object_order_depends_target_StaticTest: phony || cmake_object_order_depends_target_MyStaticLib
+rule C_COMPILER__StaticTest_unscanned_
 
+  depfile = $DEP_FILE
 
+  deps = gcc
 
-build CMakeFiles/StaticTest.dir/hello1.c.o: C_COMPILER__StaticTest_unscanned_ /home/a1/repos/test4/hello1.c || cmake_object_order_depends_target_StaticTest
+  command = ${LAUNCHER}${CODE_CHECK}/usr/bin/cc $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
 
-  DEP_FILE = CMakeFiles/StaticTest.dir/hello1.c.o.d
-
-  OBJECT_DIR = CMakeFiles/StaticTest.dir
-
-  OBJECT_FILE_DIR = CMakeFiles/StaticTest.dir
-
-  TARGET_COMPILE_PDB = CMakeFiles/StaticTest.dir/
-
-  TARGET_PDB = StaticTest.pdb
-
-
-
-
-
-# =============================================================================
-
-# Link build statements for EXECUTABLE target StaticTest
+  description = Building C object $out
 
 
 
@@ -180,27 +84,17 @@ build CMakeFiles/StaticTest.dir/hello1.c.o: C_COMPILER__StaticTest_unscanned_ /h
 
 #############################################
 
-# Link the executable StaticTest
+# Rule for linking C executable.
 
 
 
-build StaticTest: C_EXECUTABLE_LINKER__StaticTest_ CMakeFiles/StaticTest.dir/hello1.c.o | libMyStaticLib.a || libMyStaticLib.a
+rule C_EXECUTABLE_LINKER__StaticTest_
 
-  LINK_FLAGS = -rdynamic
+  command = $PRE_LINK && /usr/bin/cc $FLAGS $LINK_FLAGS $in -o $TARGET_FILE $LINK_PATH $LINK_LIBRARIES && $POST_BUILD
 
-  LINK_LIBRARIES = libMyStaticLib.a
+  description = Linking C executable $TARGET_FILE
 
-  OBJECT_DIR = CMakeFiles/StaticTest.dir
-
-  POST_BUILD = :
-
-  PRE_LINK = :
-
-  TARGET_COMPILE_PDB = CMakeFiles/StaticTest.dir/
-
-  TARGET_FILE = StaticTest
-
-  TARGET_PDB = StaticTest.pdb
+  restat = $RESTAT
 
 
 
@@ -208,23 +102,15 @@ build StaticTest: C_EXECUTABLE_LINKER__StaticTest_ CMakeFiles/StaticTest.dir/hel
 
 #############################################
 
-# Utility command for edit_cache
+# Rule for running custom commands.
 
 
 
-build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
+rule CUSTOM_COMMAND
 
-  COMMAND = cd /home/a1/repos/test4/build-cmake && /snap/cmake/1359/bin/ccmake -S/home/a1/repos/test4 -B/home/a1/repos/test4/build-cmake
+  command = $COMMAND
 
-  DESC = Running CMake cache editor...
-
-  pool = console
-
-  restat = 1
-
-
-
-build edit_cache: phony CMakeFiles/edit_cache.util
+  description = $DESC
 
 
 
@@ -232,69 +118,17 @@ build edit_cache: phony CMakeFiles/edit_cache.util
 
 #############################################
 
-# Utility command for rebuild_cache
+# Rule for re-running cmake.
 
 
 
-build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
+rule RERUN_CMAKE
 
-  COMMAND = cd /home/a1/repos/test4/build-cmake && /snap/cmake/1359/bin/cmake --regenerate-during-build -S/home/a1/repos/test4 -B/home/a1/repos/test4/build-cmake
+  command = /snap/cmake/1359/bin/cmake --regenerate-during-build -S/home/a1/repos/test4 -B/home/a1/repos/test4/build-cmake
 
-  DESC = Running CMake to regenerate build system...
+  description = Re-running CMake...
 
-  pool = console
-
-  restat = 1
-
-
-
-build rebuild_cache: phony CMakeFiles/rebuild_cache.util
-
-
-
-# =============================================================================
-
-# Target aliases.
-
-
-
-build MyStaticLib: phony libMyStaticLib.a
-
-
-
-# =============================================================================
-
-# Folder targets.
-
-
-
-# =============================================================================
-
-
-
-#############################################
-
-# Folder: /home/a1/repos/test4/build-cmake
-
-
-
-build all: phony libMyStaticLib.a StaticTest
-
-
-
-# =============================================================================
-
-# Unknown Build Time Dependencies.
-
-# Tell Ninja that they may appear as side effects of build rules
-
-# otherwise ordered by order-only dependencies.
-
-
-
-# =============================================================================
-
-# Built-in targets
+  generator = 1
 
 
 
@@ -302,25 +136,15 @@ build all: phony libMyStaticLib.a StaticTest
 
 #############################################
 
-# Re-run CMake if any of its inputs changed.
+# Rule for cleaning all built files.
 
 
 
-build build.ninja: RERUN_CMAKE | /home/a1/repos/test4/CMakeLists.txt /snap/cmake/1359/share/cmake-3.28/Modules/CMakeCCompiler.cmake.in /snap/cmake/1359/share/cmake-3.28/Modules/CMakeCCompilerABI.c /snap/cmake/1359/share/cmake-3.28/Modules/CMakeCInformation.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeCXXCompiler.cmake.in /snap/cmake/1359/share/cmake-3.28/Modules/CMakeCXXCompilerABI.cpp /snap/cmake/1359/share/cmake-3.28/Modules/CMakeCXXInformation.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeCommonLanguageInclude.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeCompilerIdDetection.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeDetermineCCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeDetermineCXXCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeDetermineCompileFeatures.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeDetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeDetermineCompilerABI.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeDetermineCompilerId.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeDetermineSystem.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeFindBinUtils.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeGenericSystem.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeInitializeConfigs.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeLanguageInformation.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeNinjaFindMake.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeParseImplicitIncludeInfo.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeParseImplicitLinkInfo.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeParseLibraryArchitecture.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeSystem.cmake.in /snap/cmake/1359/share/cmake-3.28/Modules/CMakeSystemSpecificInformation.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeSystemSpecificInitialize.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeTestCCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeTestCXXCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeTestCompilerCommon.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/ADSP-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/ARMCC-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/ARMClang-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/AppleClang-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Borland-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Bruce-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/CMakeCommonCompilerMacros.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Clang-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Clang-DetermineCompilerInternal.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Comeau-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Compaq-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Compaq-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Cray-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/CrayClang-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Embarcadero-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Fujitsu-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/FujitsuClang-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/GHS-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/GNU-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/GNU-C.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/GNU-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/GNU-CXX.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/GNU-FindBinUtils.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/GNU.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/HP-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/HP-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/IAR-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/IBMCPP-C-DetermineVersionInternal.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/IBMCPP-CXX-DetermineVersionInternal.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/IBMClang-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/IBMClang-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Intel-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/IntelLLVM-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/LCC-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/LCC-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/MSVC-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/NVHPC-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/NVIDIA-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/OpenWatcom-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/OrangeC-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/PGI-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/PathScale-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/SCO-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/SDCC-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/SunPro-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/SunPro-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/TI-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Tasking-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/TinyCC-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/VisualAge-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/VisualAge-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Watcom-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/XL-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/XL-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/XLClang-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/XLClang-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/zOS-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/zOS-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Internal/FeatureTesting.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Platform/Linux-Determine-CXX.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Platform/Linux-GNU-C.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Platform/Linux-GNU-CXX.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Platform/Linux-GNU.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Platform/Linux-Initialize.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Platform/Linux.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.28.0/CMakeCCompiler.cmake CMakeFiles/3.28.0/CMakeCXXCompiler.cmake CMakeFiles/3.28.0/CMakeSystem.cmake
+rule CLEAN
 
-  pool = console
+  command = /usr/bin/ninja $FILE_ARG -t clean $TARGETS
 
-
-
-
-
-#############################################
-
-# A missing CMake input file is not an error.
-
-
-
-build /home/a1/repos/test4/CMakeLists.txt /snap/cmake/1359/share/cmake-3.28/Modules/CMakeCCompiler.cmake.in /snap/cmake/1359/share/cmake-3.28/Modules/CMakeCCompilerABI.c /snap/cmake/1359/share/cmake-3.28/Modules/CMakeCInformation.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeCXXCompiler.cmake.in /snap/cmake/1359/share/cmake-3.28/Modules/CMakeCXXCompilerABI.cpp /snap/cmake/1359/share/cmake-3.28/Modules/CMakeCXXInformation.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeCommonLanguageInclude.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeCompilerIdDetection.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeDetermineCCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeDetermineCXXCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeDetermineCompileFeatures.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeDetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeDetermineCompilerABI.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeDetermineCompilerId.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeDetermineSystem.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeFindBinUtils.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeGenericSystem.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeInitializeConfigs.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeLanguageInformation.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeNinjaFindMake.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeParseImplicitIncludeInfo.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeParseImplicitLinkInfo.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeParseLibraryArchitecture.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeSystem.cmake.in /snap/cmake/1359/share/cmake-3.28/Modules/CMakeSystemSpecificInformation.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeSystemSpecificInitialize.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeTestCCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeTestCXXCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/CMakeTestCompilerCommon.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/ADSP-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/ARMCC-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/ARMClang-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/AppleClang-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Borland-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Bruce-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/CMakeCommonCompilerMacros.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Clang-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Clang-DetermineCompilerInternal.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Comeau-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Compaq-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Compaq-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Cray-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/CrayClang-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Embarcadero-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Fujitsu-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/FujitsuClang-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/GHS-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/GNU-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/GNU-C.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/GNU-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/GNU-CXX.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/GNU-FindBinUtils.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/GNU.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/HP-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/HP-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/IAR-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/IBMCPP-C-DetermineVersionInternal.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/IBMCPP-CXX-DetermineVersionInternal.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/IBMClang-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/IBMClang-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Intel-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/IntelLLVM-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/LCC-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/LCC-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/MSVC-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/NVHPC-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/NVIDIA-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/OpenWatcom-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/OrangeC-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/PGI-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/PathScale-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/SCO-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/SDCC-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/SunPro-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/SunPro-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/TI-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Tasking-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/TinyCC-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/VisualAge-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/VisualAge-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/Watcom-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/XL-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/XL-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/XLClang-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/XLClang-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/zOS-C-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Compiler/zOS-CXX-DetermineCompiler.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Internal/FeatureTesting.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Platform/Linux-Determine-CXX.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Platform/Linux-GNU-C.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Platform/Linux-GNU-CXX.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Platform/Linux-GNU.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Platform/Linux-Initialize.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Platform/Linux.cmake /snap/cmake/1359/share/cmake-3.28/Modules/Platform/UnixPaths.cmake CMakeCache.txt CMakeFiles/3.28.0/CMakeCCompiler.cmake CMakeFiles/3.28.0/CMakeCXXCompiler.cmake CMakeFiles/3.28.0/CMakeSystem.cmake: phony
+  description = Cleaning all built files...
 
 
 
@@ -328,32 +152,13 @@ build /home/a1/repos/test4/CMakeLists.txt /snap/cmake/1359/share/cmake-3.28/Modu
 
 #############################################
 
-# Clean all the built files.
+# Rule for printing all primary targets available.
 
 
 
-build clean: CLEAN
+rule HELP
 
+  command = /usr/bin/ninja -t targets
 
+  description = All primary targets available:
 
-
-
-#############################################
-
-# Print all primary targets available.
-
-
-
-build help: HELP
-
-
-
-
-
-#############################################
-
-# Make the all target the default.
-
-
-
-default all
