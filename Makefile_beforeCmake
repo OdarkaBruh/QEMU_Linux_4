@@ -1,0 +1,25 @@
+ifneq ($(KERNELRELEASE),)
+
+	obj-m   := hello.o
+
+	hello-y := hello1.o hello2.o
+
+
+
+else
+
+KDIR ?= /lib/modules/`uname -r`/build
+
+
+
+default:
+
+	$(MAKE) -C $(KDIR) M=$$PWD
+
+clean:
+
+	rm -rf *.o hello
+
+	
+
+endif
